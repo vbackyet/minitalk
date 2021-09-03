@@ -87,8 +87,9 @@ int parse_letter(int dig)
 	{
 		my_letter[8] = '\0';
 		the_l = ft_atoi_base(my_letter, 2);
-		// write(1, &the_l, 1);
-		printf("[%c] - my_letter\n", the_l);
+		write(1, &the_l, 1);
+		
+		// printf("[%c] - my_letter\n", the_l);
 		i = 0;
 		free(my_letter);
 		my_letter = NULL;
@@ -102,6 +103,7 @@ void acting_function_zero()
 {
 	// printf("1\n");
 	parse_letter(1);
+	
 }
 
 
@@ -122,18 +124,21 @@ int main( int argv, char **argc)
 // struct sigaction *oldact);
 	// struct sigation;
 	printf("PID %d\n", getpid());
-	struct sigaction act_zero = {0};
-	struct sigaction act_one = {0};
+	struct sigaction act_zero;
+	struct sigaction act_one;
 	// act0.sa_flags = SA_SIGINFO;
 	// act1.sa_flags = SA_SIGINFO;
 
 	act_zero.sa_handler = acting_function_zero;
-	pause();
 	act_one.sa_handler = acting_function_one;
+	// act_zero.sa_sigaction = &acting_function_zero;
+	// act_one.sa_sigaction = &acting_function_one;
 	sigaction(SIGUSR1, &act_zero, 0);
 	sigaction(SIGUSR2, &act_one, 0);
 	while(1)
 		{
+			usleep(500);
+        // pause();
 		}
 
 

@@ -37,19 +37,25 @@ void process_string(char *the_pid, char *the_message)
     int pid = ft_atoi_basic(the_pid);
     int counter;
     int i = 0;
-    while (the_message[i])
+    int len = ft_strlen(the_message);
+    char ch;
+    while (i <= len)
     {
         counter = 1<<7;
+        ch = the_message[i];
+        if (i==len)
+            ch = '\n';
+        else
+            ch = the_message[i];
         while(counter)
         {
 
-            if (the_message[i] & counter)
+            if (ch & counter)
                 kill(pid, SIGUSR1);
             else
                 kill(pid, SIGUSR2);
             counter = counter>>1;
-            printf("%d\n",counter);
-            usleep(1000000000000000000000000000000000000000000000000);
+            usleep(1000);
         }
         i++;
     }
