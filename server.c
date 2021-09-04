@@ -1,4 +1,3 @@
-
 #include <stdio.h>
 #include <unistd.h>
 #include <signal.h>
@@ -76,24 +75,61 @@ int			ft_atoi_base(char *str, int str_base)
 int parse_letter(int dig)
 {
 	static int i = 0;
+	static int flag = -1;
+	static int init = 0;
+	static int p = 0;
 	int the_l;
+	// init = 0;
+	// p =0;
+	char *my_word;
 	if (!my_letter)
 		my_letter = (char*)malloc(9);
 	my_letter[i] = dig + '0';
 	
 	i++;
-	// printf("{%s} - %d\n", my_letter, i);
+	printf("{%s} - %d\n", my_letter, i);
 	if (i == 8)
 	{
 		my_letter[8] = '\0';
 		the_l = ft_atoi_base(my_letter, 2);
-		write(1, &the_l, 1);
-		
-		// printf("[%c] - my_letter\n", the_l);
+		printf("%d\n", the_l);
+		//!!!!!!!!!!!!!!!!
+		if (flag == -1)
+		{
+			if (the_l != '/')
+			{
+				init = 10*init + (the_l - '0');
+			}
+			else
+				flag = 1;
+			if (flag == 1)
+			{
+			my_word = (char*)malloc(init + 1);
+			flag = 2;
+			}
+			// printf("%d\n" , flag);
+		}		
+		else
+		{
+			write(1, &the_l, 1);
+			printf("[%d %d %c %d]\n" , p, init, the_l, flag);
+			if (p<=init)
+			{
+				my_word[p] = the_l;
+				p++;
+			}
+			else
+			{
+				my_word[p] = '\0';
+				printf("%s\n", my_word);
+			}
+			
+		}
 		i = 0;
 		free(my_letter);
 		my_letter = NULL;
 	}
+	return(0);
 
 }
 
@@ -123,11 +159,6 @@ int main( int argv, char **argc)
 	// int sigaction(int signum, const struct sigaction *act,
 // struct sigaction *oldact);
 	// struct sigation;
-<<<<<<< HEAD
-
-	printf("PID is %d\n", getpid());
-	
-=======
 	printf("PID %d\n", getpid());
 	struct sigaction act_zero;
 	struct sigaction act_one;
@@ -147,7 +178,6 @@ int main( int argv, char **argc)
 		}
 
 
->>>>>>> 15779d971c36fd63d71681388b39757747a4230c
 	// const struct sigaction act; 
 	// act.sa_handler = acting_function;
 	// printf("%d {%s}", argv, argc[1]);
@@ -155,32 +185,3 @@ int main( int argv, char **argc)
 	// sigaction(SIGUSR2, &act, NULL);
 	return(0);
 }
-
-
-
-
-
-int			main(void)
-{
-	struct sigaction active_act; //создали две структуры
-	struct sigaction null_act;
-
-	active_act.sa_sigaction = activebit;
-	null_act.sa_sigaction = nullbit;
-	active_act.sa_flags = SA_SIGINFO;
-	null_act.sa_flags = SA_SIGINFO;
-	if (sigaction(SIGUSR1, &active_act, NULL) != 0)
-		error("signal error\n");
-	if (sigaction(SIGUSR2, &null_act, NULL) != 0)
-		error("signal error\n");
-	print_pid();
-	ft_bzero(g_to_print.message, BUFFSIZE);
-	main_handler();
-}
-
-void		activebit(int sig, siginfo_t *info, void *context);
-
- 
-
-
-
