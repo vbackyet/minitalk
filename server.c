@@ -1,7 +1,4 @@
-#include <stdio.h>
-#include <unistd.h>
-#include <signal.h>
-#include <stdlib.h>
+#include "minitalk.h"
 
 char *my_letter;
 // struct sigaction {
@@ -81,18 +78,18 @@ int parse_letter(int dig)
 	int the_l;
 	// init = 0;
 	// p =0;
-	char *my_word;
+	static char *my_word = NULL;
 	if (!my_letter)
 		my_letter = (char*)malloc(9);
 	my_letter[i] = dig + '0';
 	
 	i++;
-	printf("{%s} - %d\n", my_letter, i);
+	// printf("{%s} - %d\n", my_letter, i);
 	if (i == 8)
 	{
 		my_letter[8] = '\0';
 		the_l = ft_atoi_base(my_letter, 2);
-		printf("%d\n", the_l);
+		printf("(%c %d)\n", the_l, flag);
 		//!!!!!!!!!!!!!!!!
 		if (flag == -1)
 		{
@@ -104,6 +101,7 @@ int parse_letter(int dig)
 				flag = 1;
 			if (flag == 1)
 			{
+			printf("[%d]\n", init);
 			my_word = (char*)malloc(init + 1);
 			flag = 2;
 			}
@@ -111,22 +109,28 @@ int parse_letter(int dig)
 		}		
 		else
 		{
-			write(1, &the_l, 1);
-			printf("[%d %d %c %d]\n" , p, init, the_l, flag);
-			if (p<=init)
+			// write(1, &the_l, 1);
+			// printf("[%d %d %c %d]\n" , p, init, the_l, flag);
+			if (p<init)
 			{
 				my_word[p] = the_l;
+				// printf("||%s||\n", my_word);
 				p++;
 			}
-			else
+			if (p==init)
 			{
 				my_word[p] = '\0';
-				printf("%s\n", my_word);
+				printf("|%s|\n", my_word);
+				free(my_word);
+				flag = -1;
+				init = 0;
+				p = 0;
 			}
 			
 		}
 		i = 0;
 		free(my_letter);
+
 		my_letter = NULL;
 	}
 	return(0);
@@ -135,17 +139,25 @@ int parse_letter(int dig)
 
 
 
-void acting_function_zero()
+void acting_function_zero(int sig, siginfo_t *siginfo, void *code)
 {
 	// printf("1\n");
+	(void)sig;
+	(void)siginfo;
+	(void)code;
+	// write(1, "asd", 3);
 	parse_letter(1);
 	
 }
 
 
-void acting_function_one()
+void acting_function_one(int sig, siginfo_t *siginfo, void *code)
 {
 	// printf("0\n");
+	// printf("PID - %d\n", siginfo->si_pid);
+	(void)sig;
+	(void)siginfo;
+	(void)code;
 	parse_letter(0);
 }
 
@@ -154,7 +166,7 @@ void acting_function_one()
 // восемь бит
 
 
-int main( int argv, char **argc)
+int main()
 {
 	// int sigaction(int signum, const struct sigaction *act,
 // struct sigaction *oldact);
@@ -162,18 +174,31 @@ int main( int argv, char **argc)
 	printf("PID %d\n", getpid());
 	struct sigaction act_zero;
 	struct sigaction act_one;
-	// act0.sa_flags = SA_SIGINFO;
-	// act1.sa_flags = SA_SIGINFO;
+	act_zero.sa_flags = SA_SIGINFO;
+	act_one.sa_flags = SA_SIGINFO;
+// struct sigaction act;
+//     act.sa_sigaction=&ft_handle;
+//     act.sa_flags=SA_SIGINFO;
+//     sigaction(SIGUSR2, &act, NULL);
+//     sigaction(SIGUSR1, &act, NULL);
+//     while (1)
+//         pause();
+	sigemptyset(&act_zero.sa_mask);
+	sigaddset(&act_zero.sa_mask, SIGUSR1);
 
-	act_zero.sa_handler = acting_function_zero;
-	act_one.sa_handler = acting_function_one;
-	// act_zero.sa_sigaction = &acting_function_zero;
-	// act_one.sa_sigaction = &acting_function_one;
-	sigaction(SIGUSR1, &act_zero, 0);
-	sigaction(SIGUSR2, &act_one, 0);
+	// act_zero.sa_handler = acting_function_zero;
+	// act_one.sa_handler = acting_function_one;
+	act_zero.sa_sigaction = &acting_function_zero;
+	act_one.sa_sigaction = &acting_function_one;
+
+
+
+
+	sigaction(SIGUSR1, &act_zero, NULL);
+	sigaction(SIGUSR2, &act_one, NULL);
 	while(1)
 		{
-			usleep(500);
+			usleep(1);
         // pause();
 		}
 

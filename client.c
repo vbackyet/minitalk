@@ -1,8 +1,4 @@
-#include <stdio.h>
-#include <unistd.h>
-#include <signal.h>
-#include <stdlib.h>
-
+#include "minitalk.h"
 
 
 int ft_strlen(char *the_pid)
@@ -30,7 +26,6 @@ int ft_atoi_basic(char *the_pid)
 }
 
 
-// Проверить на валидность аргументы!!!!!!!!!!!!!
 int		len(long nb)
 {
 	int		len;
@@ -61,9 +56,7 @@ char	*ft_itoa_with_slash(int nb)
 	if (!(str = (char*)malloc(sizeof(char) * (i + 2))))
 		return (NULL);
 	str[i--] = '\0';
-
 	str[i--] = '/';
-
 	if (n == 0)
 	{
 		str[0] = 48;
@@ -94,8 +87,7 @@ void process_string(char *the_pid, char *the_message)
     int pid = ft_atoi_basic(the_pid);
     int counter;
 	printf("%s", the_message);
-    
-	int len_counter = 0;
+
     int len = ft_strlen(the_message);
 	int i = 0;
     char ch;
@@ -103,10 +95,6 @@ void process_string(char *the_pid, char *the_message)
     {
         counter = 1<<7;
         ch = the_message[i];
-        // if (i==len)
-        //     ch = '\n';
-        // else
-            ch = the_message[i];
         while(counter)
         {
 
@@ -115,11 +103,10 @@ void process_string(char *the_pid, char *the_message)
             else
                 kill(pid, SIGUSR2);
             counter = counter>>1;
-            usleep(100);
+            usleep(1000);
         }
         i++;
     }
-    exit(1);
 
 }
 
@@ -150,21 +137,35 @@ char *after_slash(char *my_word, int i)
 }
 
 
+int check_arg(char *pid)
+{
+	int i = 0;
+	while (pid[i])
+	{
+		if (pid[i] < '0' || pid[i] > '9')
+		return(1);
+		i++;
+	}
+	return(0);
+}
+
 
 int main(int argc, char **argv)
 {
-    if (!(argc = 3))
+    if (!(argc == 3))
         {
             write(1, "wrong number of arguments!\n", 27);
             exit(1);
         }
-    else
-	{
-		char *my_length = before_slash(argv[2]);
-		printf("[%s]\n", my_length);
-		process_string(argv[1],my_length);		
-        process_string(argv[1], argv[2]);
-		free(my_length);
-	}
+	if (check_arg(argv[1]))
+	        {
+            write(1, "wrong argument!\n", 16);
+            exit(1);
+        	}	
+	char *my_length = before_slash(argv[2]);
+	process_string(argv[1],my_length);		
+	process_string(argv[1], argv[2]);
+	free(my_length);
+	exit(1);
     return(0);
 }
