@@ -86,22 +86,33 @@ void process_string(char *the_pid, char *the_message)
     
     int pid = ft_atoi_basic(the_pid);
     int counter;
-	printf("%s", the_message);
+	// printf("%s", the_message);
 
     int len = ft_strlen(the_message);
 	int i = 0;
     char ch;
+	write(1, "\n", 1);
     while (i < len)
     {
         counter = 1<<7;
         ch = the_message[i];
+		write(1, "{", 1);
+		write(1, &ch, 1);
+		write(1, "}", 1);
+		write(1, "\n", 1);
         while(counter)
         {
 
             if (ch & counter)
+			{
+				write(1, "1" , 1);
                 kill(pid, SIGUSR1);
+			}
             else
+			{
+				write(1, "0" , 1);
                 kill(pid, SIGUSR2);
+			}
             counter = counter>>1;
             usleep(1000);
         }

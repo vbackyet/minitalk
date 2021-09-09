@@ -66,25 +66,45 @@ int			ft_atoi_base(char *str, int str_base)
 	return (ret * neg);
 }
 
+// static int	spid;
+// if (!spid && siginfo->si_pid)
+// 	spid = siginfo->si_pid;
+// if (spid && spid == siginfo->si_pid)
+// 	... handler_body ...
 
-
-
-int parse_letter(int dig)
+// void	ft_handle(int sig, siginfo_t *siginfo, void *code)
+int parse_letter(int dig, int sig, siginfo_t *siginfo, void *code)
 {
+
+		(void)sig;
+	(void)siginfo;
+	(void)code;
+	int the_l;
+	// init = 0;
+	// p =0;
+
+	// static int	spid;
+	// write(1, "asd", 3);
+
+// 	if (!spid && siginfo->si_pid)
+// 		spid = siginfo->si_pid;
+// 	printf( "(%d %d) \n",spid, sig);
+// 	if (spid && spid == siginfo->si_pid)
+// {
+
 	static int i = 0;
 	static int flag = -1;
 	static int init = 0;
 	static int p = 0;
-	int the_l;
-	// init = 0;
-	// p =0;
 	static char *my_word = NULL;
+
+	
 	if (!my_letter)
 		my_letter = (char*)malloc(9);
 	my_letter[i] = dig + '0';
 	
 	i++;
-	// printf("{%s} - %d\n", my_letter, i);
+	printf("{%s} - %d\n", my_letter, i);
 	if (i == 8)
 	{
 		my_letter[8] = '\0';
@@ -125,6 +145,7 @@ int parse_letter(int dig)
 				flag = -1;
 				init = 0;
 				p = 0;
+				my_word = NULL;
 			}
 			
 		}
@@ -133,6 +154,7 @@ int parse_letter(int dig)
 
 		my_letter = NULL;
 	}
+// }
 	return(0);
 
 }
@@ -142,11 +164,12 @@ int parse_letter(int dig)
 void acting_function_zero(int sig, siginfo_t *siginfo, void *code)
 {
 	// printf("1\n");
-	(void)sig;
-	(void)siginfo;
-	(void)code;
-	// write(1, "asd", 3);
-	parse_letter(1);
+	// (void)sig;
+	// (void)siginfo;
+	// (void)code;
+	
+	parse_letter(1, sig, siginfo, code);
+	// usleep(1500);
 	
 }
 
@@ -155,15 +178,21 @@ void acting_function_one(int sig, siginfo_t *siginfo, void *code)
 {
 	// printf("0\n");
 	// printf("PID - %d\n", siginfo->si_pid);
-	(void)sig;
-	(void)siginfo;
-	(void)code;
-	parse_letter(0);
+	// (void)sig;
+	// (void)siginfo;
+	// (void)code;
+	parse_letter(0, sig, siginfo, code);
+		// usleep(1500);
+	
 }
 
 
-// второй сигнал слово
-// восемь бит
+// поменять printf на свой
+// сделать бонусы
+// отправлять сигналы
+// unicode
+// сделать норму
+
 
 
 int main()
@@ -172,8 +201,8 @@ int main()
 // struct sigaction *oldact);
 	// struct sigation;
 	printf("PID %d\n", getpid());
-	struct sigaction act_zero;
-	struct sigaction act_one;
+	struct sigaction act_zero = {0};
+	struct sigaction act_one = {0};
 	act_zero.sa_flags = SA_SIGINFO;
 	act_one.sa_flags = SA_SIGINFO;
 // struct sigaction act;
@@ -186,6 +215,9 @@ int main()
 	sigemptyset(&act_zero.sa_mask);
 	sigaddset(&act_zero.sa_mask, SIGUSR1);
 
+
+	sigemptyset(&act_one.sa_mask);
+	sigaddset(&act_one.sa_mask, SIGUSR2);
 	// act_zero.sa_handler = acting_function_zero;
 	// act_one.sa_handler = acting_function_one;
 	act_zero.sa_sigaction = &acting_function_zero;
@@ -198,7 +230,7 @@ int main()
 	sigaction(SIGUSR2, &act_one, NULL);
 	while(1)
 		{
-			usleep(1);
+			usleep(500);
         // pause();
 		}
 

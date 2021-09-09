@@ -6,7 +6,7 @@ NAME_CLIENT	= client
 
 HEADERS =	minitalk.h
 
-FLAGS	= 	
+FLAGS	= 	-Wall -Wextra -Werror
 
 SRC_SERVER  = server.c 
 SRC_CLIENT  = client.c
@@ -28,12 +28,12 @@ $(NAME_CLIENT) : $(SRC_CLIENT)
 
 
 clean	:
-	rm -f $(OBJ)
-	rm -f $(OBJ_BONUS)
+	rm -f $(OBJ_SERVER)
+	rm -f $(OBJ_CLIENT)
 
 fclean	:	clean
-	rm -f $(NAME) 
-	rm -f $(NAME_BONUS) 
+	rm -f $(NAME_SERVER) 
+	rm -f $(NAME_CLIENT) 
 
 re:	fclean all
 
